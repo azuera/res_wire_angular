@@ -1,1 +1,23 @@
-<p>game-list works!</p>
+<h2>Catalogue des jeux</h2>
+
+@if (error()) {
+  <div class="error-message">
+    <p>❌ {{ error() }}</p>
+  </div>
+}
+
+<div class="game-grid">
+  @for (product of products(); track product.id) {
+    <div class="game-card">
+      <h3>{{ product.title }}</h3>
+      <p>{{ product.price }} €</p>
+      <p>Quantité: {{ product.quantity }}</p>
+      <p>Région: {{ product.region }}</p>
+      <a [routerLink]="['/game', product.id]">
+        <button>Voir détail</button>
+      </a>
+    </div>
+  } @empty {
+    <p>Chargement des jeux...</p>
+  }
+</div>

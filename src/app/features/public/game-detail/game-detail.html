@@ -1,1 +1,43 @@
-<p>game-detail works!</p>
+@if (loading()) {
+  <p>Chargement...</p>
+}
+
+@if (error()) {
+  <div class="error">
+    <p>❌ {{ error() }}</p>
+    <a routerLink="/">Retour à la liste</a>
+  </div>
+}
+
+@if (product()) {
+  <div class="game-detail">
+    <a routerLink="/">← Retour à la liste</a>
+
+    <h1>{{ product()?.title }}</h1>
+
+    <div class="info">
+      <p><strong>Prix :</strong> {{ product()?.price }} €</p>
+      <p><strong>Quantité disponible :</strong> {{ product()?.quantity }}</p>
+      <p><strong>Région :</strong> {{ product()?.region }}</p>
+      <p><strong>Date de sortie :</strong> {{ product()?.releaseDate | date }}</p>
+      <p><strong>Note :</strong> {{ product()?.rating }}/5</p>
+    </div>
+
+    <div class="description">
+      <h2>Description</h2>
+      <p>{{ product()?.description }}</p>
+    </div>
+
+    <div class="tags">
+      <h2>Tags</h2>
+      @for (tag of product()?.tags; track tag) {
+        <span class="tag">{{ tag }}</span>
+      }
+    </div>
+
+    <div class="configuration" *ngIf="product()?.requiredConfiguration">
+      <h2>Configuration requise</h2>
+      <p>{{ product()?.requiredConfiguration }}</p>
+    </div>
+  </div>
+}

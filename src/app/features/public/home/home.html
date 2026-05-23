@@ -1,1 +1,42 @@
-<p>home works!</p>
+<div class="home-container">
+  <h1>Bienvenue sur GameWall</h1>
+  <p>Découvrez les derniers jeux ajoutés</p>
+
+  @if (loading()) {
+    <div class="loading">
+      <p>Chargement des derniers jeux...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error">
+      <p>❌ {{ error() }}</p>
+    </div>
+  }
+
+  @if (!loading() && !error()) {
+    <div class="games-grid">
+      @for (product of latestProducts(); track product.id) {
+        <div class="game-card">
+          <img
+            *ngIf="product.images && product.images[0]"
+            [src]="product.images[0].url"
+            [alt]="product.title"
+            class="game-image"
+          >
+          <div class="game-info">
+            <h2>{{ product.title }}</h2>
+            <p class="price">{{ product.price }} €</p>
+            <p class="release-date">Sorti le : {{ product.releaseDate | date:'dd/MM/yyyy' }}</p>
+            <p class="region">{{ product.region }}</p>
+            <a [routerLink]="['/game', product.id]" class="btn-detail">Voir détail →</a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="see-all">
+    <a [routerLink]="['/games']" class="btn-all">Voir tout le catalogue →</a>
+  </div>
+</div>

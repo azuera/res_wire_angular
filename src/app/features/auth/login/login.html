@@ -1,1 +1,49 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-card">
+    <h1>Connexion</h1>
+
+    @if (error()) {
+      <div class="error-message">
+        {{ error() }}
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          placeholder="exemple@email.com"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          placeholder="Votre mot de passe"
+        >
+      </div>
+
+      <button type="submit" [disabled]="loading()">
+        @if (loading()) {
+          Connexion...
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <p class="register-link">
+      Pas encore de compte ? <a routerLink="/register">S'inscrire</a>
+    </p>
+  </div>
+</div>

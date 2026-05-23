@@ -1,1 +1,17 @@
-<p>navbar works!</p>
+<p>navbar works!</p><nav class="navbar">
+  <div class="nav-brand">
+    <a routerLink="/">GameWall</a>
+  </div>
+
+  <div class="nav-menu">
+    <a routerLink="/games">Catalogue</a>
+
+    @if (authService.isAuthenticated()) {
+      <span class="user-email">{{ authService.currentUser()?.email }}</span>
+      <a routerLink="/logout">Déconnexion</a>
+    } @else {
+      <a routerLink="/login">Connexion</a>
+      <a routerLink="/register">Inscription</a>
+    }
+  </div>
+</nav>
