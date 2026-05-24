@@ -7,6 +7,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
 
   if (token) {
+    // Token expiré → on nettoie et on envoie sans token
+    if (authService.isTokenExpired(token)) {
+      authService.logout();
+      return next(req);
+    }
+
     const cloned = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`),
     });

@@ -1,17 +1,13 @@
-<p>navbar works!</p><nav class="navbar">
-  <div class="nav-brand">
-    <a routerLink="/">GameWall</a>
-  </div>
+<nav>
+  <a routerLink="/">Accueil</a>
+  <a routerLink="/games">Catalogue</a>
 
-  <div class="nav-menu">
-    <a routerLink="/games">Catalogue</a>
-
-    @if (authService.isAuthenticated()) {
-      <span class="user-email">{{ authService.currentUser()?.email }}</span>
-      <a routerLink="/logout">Déconnexion</a>
-    } @else {
-      <a routerLink="/login">Connexion</a>
-      <a routerLink="/register">Inscription</a>
-    }
-  </div>
+  @if (authService.isAuthenticated()) {
+    <a routerLink="/dashboard">Tableau de bord</a>
+    <span>{{ authService.currentUser()?.email }}</span>
+    <a routerLink="/logout">Déconnexion</a>
+  } @else {
+    <a routerLink="/login">Connexion</a>
+    <a routerLink="/register">Inscription</a>
+  }
 </nav>

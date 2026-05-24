@@ -1,1 +1,54 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Mon Tableau de bord</h1>
+    <p>Bienvenue, {{ user()?.email }} !</p>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Carte Profil -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h2>Mon Profil</h2>
+        <a routerLink="/profile" class="btn-edit">Modifier</a>
+      </div>
+      <div class="card-content">
+        <p><strong>Email :</strong> {{ user()?.email }}</p>
+        <p><strong>Membre depuis :</strong> {{ user()?.createdAt | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Rôle :</strong> {{ user()?.roles?.join(', ') || 'Utilisateur' }}</p>
+      </div>
+    </div>
+
+    <!-- Dernières Factures -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h2>Dernières Factures</h2>
+        <a routerLink="/invoices" class="btn-edit">Voir tout</a>
+      </div>
+      <div class="card-content">
+        @if (loading()) {
+          <p>Chargement des factures...</p>
+        } @else if (error()) {
+          <p class="error">{{ error() }}</p>
+        } @else if (recentInvoices().length === 0) {
+          <p>Aucune facture pour le moment.</p>
+        } @else {
+          <div class="invoices-list">
+            @for (invoice of recentInvoices(); track invoice.id) {
+              <div class="invoice-item">
+                <div class="invoice-info">
+                  <span class="invoice-number">{{ invoice.invoiceNumber }}</span>
+                  <span class="invoice-date">{{ invoice.createdAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="invoice-amount">
+                  {{ invoice.totalAmount | currency:'EUR' }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+
+  </div>
+</div>

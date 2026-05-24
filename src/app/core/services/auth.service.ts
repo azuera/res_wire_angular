@@ -25,16 +25,18 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:8000/api';
 
-  // Signal pour l'état de connexion
   isAuthenticated = signal<boolean>(false);
   currentUser = signal<any>(null);
 
   constructor() {
-    // Vérifier si un token existe au démarrage
     const token = this.getToken();
-    if (token) {
+    if (token && !this.isTokenExpired(token)) {
       this.isAuthenticated.set(true);
       this.loadUserInfo();
+    } else if (token && this.isTokenExpired(token)) {
+      // Token expiré au démarrage → on nettoie
+      this.removeToken();
+      this.isAuthenticated.set(false);
     }
   }
 
@@ -51,7 +53,11 @@ export class AuthService {
   }
 
   register(userData: RegisterData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/users`, userData);
+    return this.http.post(`${this.apiUrl}/users`, userData, {
+      headers: {
+        'Content-Type': 'application/ld+json',
+      },
+    });
   }
 
   logout(): void {
@@ -65,6 +71,21 @@ export class AuthService {
     return localStorage.getItem('jwt_token');
   }
 
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired(token);
+  }
+
+  // Décode le payload JWT et vérifie la date d'expiration
+  isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return Date.now() >= payload.exp * 1000;
+    } catch {
+      return true; // token malformé → considéré expiré
+    }
+  }
+
   private setToken(token: string): void {
     localStorage.setItem('jwt_token', token);
   }
@@ -74,10 +95,25 @@ export class AuthService {
   }
 
   private loadUserInfo(): void {
-    // Récupérer les infos de l'utilisateur connecté
     this.http.get(`${this.apiUrl}/users/me`).subscribe({
       next: (user) => this.currentUser.set(user),
       error: () => this.currentUser.set(null),
     });
+  }
+  updateProfile(userData: any): Observable<any> {
+    const userId = this.currentUser()?.id;
+    return this.http
+      .patch(`${this.apiUrl}/users/${userId}`, userData)
+      .pipe(tap(() => this.loadUserInfo()));
+  }
+  deleteAccount(): Observable<any> {
+    const userId = this.currentUser()?.id;
+    return this.http.delete(`${this.apiUrl}/users/${userId}`).pipe(
+      tap(() => {
+        this.removeToken();
+        this.isAuthenticated.set(false);
+        this.currentUser.set(null);
+      }),
+    );
   }
 }

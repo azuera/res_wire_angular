@@ -1,0 +1,57 @@
+<div class="invoices-container">
+  <div class="invoices-header">
+    <h1>📄 Mes Factures</h1>
+    <a routerLink="/dashboard" class="btn-back">← Retour au tableau de bord</a>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">
+      <p>Chargement de vos factures...</p>
+    </div>
+  } @else {
+    @if (invoices().length === 0) {
+      <div class="no-invoices">
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <h2>Aucune facture pour le moment</h2>
+          <p>Vous n'avez pas encore effectué d'achat.</p>
+          <a routerLink="/games" class="btn-shop">🎮 Découvrir les jeux</a>
+        </div>
+      </div>
+    } @else {
+      <div class="invoices-list">
+        <div class="invoices-stats">
+          <p>Total : <strong>{{ invoices().length }}</strong> facture(s)</p>
+        </div>
+
+        <div class="invoices-grid">
+          @for (invoice of invoices(); track invoice.id) {
+            <div class="invoice-card">
+              <div class="invoice-header">
+                <span class="invoice-number">Facture #{{ invoice.invoiceNumber }}</span>
+                <span class="invoice-status" [class.paid]="invoice.status === 'paid'">
+                  {{ invoice.status === 'paid' ? '✓ Payée' : 'En attente' }}
+                </span>
+              </div>
+
+              <div class="invoice-body">
+                <div class="invoice-date">
+                  📅 {{ invoice.createdAt | date:'dd/MM/yyyy à HH:mm' }}
+                </div>
+                <div class="invoice-amount">
+                  Total : <strong>{{ invoice.totalAmount | currency:'EUR' }}</strong>
+                </div>
+              </div>
+
+              <div class="invoice-footer">
+                <button class="btn-detail" (click)="viewDetail(invoice.id)">
+                  Voir le détail
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

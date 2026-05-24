@@ -1,44 +1,48 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
 import { InvoiceService, Invoice } from '../../../core/services/invoice.service';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-invoices',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css'],
+  templateUrl: './invoices.html',
+  styleUrls: ['./invoices.css'],
 })
-export class DashboardComponent implements OnInit {
-  private authService = inject(AuthService);
+export class InvoicesComponent implements OnInit {
   private invoiceService = inject(InvoiceService);
 
-  user = this.authService.currentUser;
-  recentInvoices = signal<Invoice[]>([]);
+  invoices = signal<Invoice[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
 
   ngOnInit() {
-    this.loadRecentInvoices();
+    this.loadInvoices();
   }
 
-  loadRecentInvoices() {
+  loadInvoices() {
     this.invoiceService.getUserInvoices().subscribe({
-      next: (invoices) => {
-        // Prendre les 3 dernières factures
-        const sorted = [...invoices].sort(
+      next: (data) => {
+        // Trier par date décroissante
+        const sorted = [...data].sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
-        this.recentInvoices.set(sorted.slice(0, 3));
+        this.invoices.set(sorted);
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Erreur chargement factures', err);
-        this.error.set('Impossible de charger vos factures');
+        // Pas d'erreur affichée, juste un tableau vide
+        this.invoices.set([]);
         this.loading.set(false);
       },
     });
+  }
+  viewDetail(invoiceId: number) {
+    // Pour l'instant, affiche juste une alerte
+    // Vous pourrez plus tard créer une page de détail
+    alert(`Détail de la facture #${invoiceId} à implémenter`);
+    // Option: this.router.navigate(['/invoice', invoiceId]);
   }
 }

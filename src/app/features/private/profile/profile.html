@@ -1,0 +1,103 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <h1>Mon Profil</h1>
+      <div class="header-actions">
+        @if (!editMode()) {
+          <button class="btn-edit" (click)="toggleEditMode()">
+            ✏️ Modifier
+          </button>
+        }
+        <button class="btn-delete" (click)="onDeleteAccount()" [disabled]="deleting()">
+          @if (deleting()) {
+            Suppression...
+          } @else {
+            🗑️ Supprimer mon compte
+          }
+        </button>
+      </div>
+    </div>
+
+    @if (success()) {
+      <div class="alert success">
+        {{ success() }}
+      </div>
+    }
+
+    @if (error()) {
+      <div class="alert error">
+        {{ error() }}
+      </div>
+    }
+
+    @if (!editMode()) {
+      <!-- Mode Visualisation -->
+      <div class="profile-info">
+        <div class="info-group">
+          <label>📧 Email :</label>
+          <p>{{ user()?.email }}</p>
+        </div>
+        <div class="info-group">
+          <label>📅 Membre depuis :</label>
+          <p>{{ user()?.createdAt | date:'dd/MM/yyyy' }}</p>
+        </div>
+        <div class="info-group">
+          <label>👤 Rôle :</label>
+          <p>{{ user()?.roles?.join(', ') || 'Utilisateur' }}</p>
+        </div>
+      </div>
+    } @else {
+      <!-- Mode Édition -->
+      <form (ngSubmit)="onSubmit()" class="profile-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="editData.email"
+            name="email"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Nouveau mot de passe (optionnel)</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="editData.plainPassword"
+            name="password"
+            placeholder="Laissez vide pour conserver l'actuel"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmer le mot de passe</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            [(ngModel)]="editData.confirmPassword"
+            name="confirmPassword"
+          >
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="toggleEditMode()">
+            Annuler
+          </button>
+          <button type="submit" class="btn-save" [disabled]="loading()">
+            @if (loading()) {
+              Sauvegarde...
+            } @else {
+              Sauvegarder
+            }
+          </button>
+        </div>
+      </form>
+    }
+
+    <div class="profile-footer">
+      <a routerLink="/dashboard" class="btn-back">← Retour au tableau de bord</a>
+    </div>
+  </div>
+</div>
